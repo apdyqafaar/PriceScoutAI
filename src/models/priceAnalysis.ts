@@ -1,20 +1,58 @@
-// src/models/PriceAnalysis.ts
+// src/models/RankedProduct.ts
 import { Schema, model, models } from "mongoose";
 
-const PriceAnalysisSchema = new Schema(
+const RankedProductSchema = new Schema(
   {
-    searchId: {
-      type: Schema.Types.ObjectId,
-      ref: "ProductSearch",
+    productId:{
+       type: String,
+      required: true
     },
-    cheapestUrl: String,
-    lowestPrice: Number,
-    currency: String,
-    confidenceScore: Number,
-    notes: String,
+
+    rankedProducts:[
+      {
+         title: {
+      type: String,
+      required: true,
+    },
+
+    link: {
+      type: String,
+      required: true,
+    },
+
+    source: {
+      type: String,
+    },
+
+    position: {
+      type: Number,
+      required: true,
+    },
+
+    price: {
+      type: String,
+    },
+
+    imageUrl: {
+      type: String,
+    },
+
+    rating: {
+      type: Number,
+    },
+
+    rankingReason: {
+      type: String,
+      required: true,
+    },
+      }
+    ]
+   
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-export default models.PriceAnalysis ||
-  model("PriceAnalysis", PriceAnalysisSchema);
+export default models.RankedProduct ||
+  model("RankedProduct", RankedProductSchema);

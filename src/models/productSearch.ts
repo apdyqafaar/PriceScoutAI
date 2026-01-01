@@ -4,28 +4,28 @@ import { Schema, model, models } from "mongoose";
 const ProductSearchSchema = new Schema(
   {
     query: { type: String, required: true },
-    source: { type: String }, // google, serper, etc
-    urls: [{ type: String }],
     status: {
       type: String,
       enum: ["pending", "completed", "failed"],
       default: "pending",
     },
+    completedReason:{type:String},
     progress:{type:Number, default:0},
-    productDetails: [
+    onganics: [
   {
     title: { type: String},
-    url: { type: String},
-    Snippet: { type: String},
-    siteLinks:[
-      {
-         title:{type:String},
-         links:{type:String}
-      }
-    ]
+    link: { type: String},
+    source: { type: String},
+    imageUrl: { type: String},
+    price: { type: String},
+    position: { type: Number},
+    rating: { type: Number},
   },
 ],
-
+  runId:{type: String,
+    required: true,
+    unique: true,
+    index: true,}
   },
 
   { timestamps: true }

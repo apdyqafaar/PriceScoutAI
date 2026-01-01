@@ -20,3 +20,15 @@ export async function connectDB() {
     throw error;
   }
 }
+
+
+export const closeDb=async()=>{
+  try {
+    if(mongoose.connection.readyState !==0){
+      await mongoose.connection.close()
+       console.log("🔌 MongoDB connection closed");
+    }
+  } catch (error) {
+    console.error("❌ Error closing MongoDB connection", error);
+  }
+}
