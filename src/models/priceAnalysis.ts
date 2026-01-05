@@ -3,10 +3,10 @@ import { Schema, model, models } from "mongoose";
 
 const RankedProductSchema = new Schema(
   {
-    productId:{
-       type: String,
-      required: true
-    },
+    runId:{type: String,
+    required: true,
+    unique: true,
+    index: true,},
 
     rankedProducts:[
       {

@@ -19,18 +19,18 @@ export const doneTool=createTool({
                const runId=network.state?.data.runId as string
                if(runId){
                  await connectDB()
-               await productSearch.findByIdAndUpdate(
-                 runId,
+               await productSearch.findOneAndUpdate(
+                 {runId},
                  {
                    $set:{
-                     progress:80,
+                     progress:100,
                      completedReason:input.note,
                      status:"completed"
                    }
                  }
                )
          
-               await closeDb()
+              //  await closeDb()
          
                }else{
                  console.error("No runId in Network")

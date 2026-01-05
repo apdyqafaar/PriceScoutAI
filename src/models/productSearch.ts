@@ -3,15 +3,16 @@ import { Schema, model, models } from "mongoose";
 
 const ProductSearchSchema = new Schema(
   {
-    query: { type: String, required: true },
+    query: { type: String, default: "" },
+    UserQuery: { type: String, default: "",},
     status: {
       type: String,
       enum: ["pending", "completed", "failed"],
       default: "pending",
     },
-    completedReason:{type:String},
+    completedReason:{type:String, default: "",},
     progress:{type:Number, default:0},
-    onganics: [
+    onganics:{type: [
   {
     title: { type: String},
     link: { type: String},
@@ -22,6 +23,8 @@ const ProductSearchSchema = new Schema(
     rating: { type: Number},
   },
 ],
+default:[]
+},
   runId:{type: String,
     required: true,
     unique: true,

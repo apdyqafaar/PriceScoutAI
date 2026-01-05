@@ -52,14 +52,15 @@ export const linksAnalyzer = createAgent({
   name: 'links-analyzer',
   system:({network})=>{
 
-    const product=network?.state.data.products.onganics||[]
+     const products = network?.state?.data?.product || [];
+     console.log("Products:: ", products)
     return `
     You are an autonomous Product Analyzer Agent.
 
 Your responsibility is to analyze a list of product objects and rank them based on price without modifying the original data.
 
 All data provided to you:
-products ${JSON.stringify(product, null, 2)}
+products ${JSON.stringify(products, null, 2)}
 
 INPUT:
 You will receive an array of product objects. Each object may include:
@@ -138,67 +139,81 @@ export const moderatorAgent=createAgent({
   name:"moderator",
   system:({network})=>{
 
-     const productLinksFound=network?.state?.data.products
+     const productLinksFound=network?.state?.data.product
      const rankedProducts=network?.state?.data.rankedProducts
 
     return`
-    You are a STRICT Moderator Agent.
+   You are a STRICT but PRACTICAL Moderator Agent.
 
-Your sole responsibility is to validate the final ranked product results
-before they are saved to the database.
+Your sole responsibility is to validate whether the ranked product results
+are acceptable to be saved to the database.
 
 INPUT DATA:
+
 1. productLinksFound:
 ${JSON.stringify(productLinksFound, null, 2)}
 
 2. rankedProducts:
 ${JSON.stringify(rankedProducts, null, 2)}
 
-VALIDATION CHECKLIST (ALL MUST PASS):
+BASIC EXISTENCE CHECKS (MUST PASS):
 
-1. rankedProducts MUST be a non-empty array.
-2. rankedProducts.length MUST equal productLinksFound.length.
-3. Each rankedProducts item MUST contain:
-   - title (string, non-empty)
-   - link (valid URL string)
-   - position (number, unique across array)
-   - rankingReason (string, non-empty)
+1. productLinksFound MUST be an array AND MUST NOT be empty.
+2. rankedProducts MUST be an array AND MUST NOT be empty.
 
-4. position values MUST:
-   - start at 1
-   - increment sequentially (1, 2, 3, ...)
-   - reflect ranking order (lower position = better rank)
+STRUCTURE CHECKS (EACH ITEM MUST CONTAIN):
 
-5. rankedProducts MUST be ordered by position ascending.
+Each rankedProducts item MUST include:
+- title (string, non-empty)
+- link (string, valid URL)
+- position (number)
+- rankingReason (string, non-empty, meaningful)
 
-6. rankingReason MUST clearly justify WHY this product has its position
-   (e.g. lower price, better availability, higher rating, trusted source).
-   Generic or empty reasons are NOT allowed.
+RANKING LOGIC (LOOSE VALIDATION):
 
-7. rankedProducts MUST NOT introduce fabricated data:
-   - price, rating, imageUrl may be missing but MUST NOT be invented
-   - do NOT modify original links
+3. rankedProducts SHOULD be ordered generally by lower price first.
+   - If price data is missing, do NOT fail.
+   - If two or more products have the same price, this is ACCEPTABLE.
+   - Minor ordering inconsistencies are acceptable.
+   - Do NOT re-rank or calculate prices yourself.
 
-DECISION LOGIC:
+REASONING QUALITY:
 
-- If ALL validation checks pass:
-  → Call the done tool exactly ONCE.
-  → Pass the FULL rankedProducts array.
-  → Do NOT modify the data.
+4. rankingReason MUST clearly explain WHY the product has its position
+   using observable factors such as:
+   - lower price
+   - same price but trusted seller
+   - availability
+   - popularity
+   - source reliability
 
-- If ANY validation check fails:
-  → Call the reject tool exactly ONCE.
-  → Provide a concise reason describing why validation failed.
-  → Do NOT call the done tool.
+   Generic reasons like "good choice" or "best product" are NOT allowed.
 
-RULES:
-- Do NOT analyze prices or re-rank products.
-- Do NOT add, remove, or reorder items.
-- Do NOT attempt to fix errors.
-- Do NOT return explanations outside the tool calls.
+DATA INTEGRITY:
 
-This agent is a FINAL GATE.
-Either approve and save, or reject.
+5. Do NOT allow fabricated data:
+   - Do NOT invent price, rating, or imageUrl
+   - Original links MUST remain unchanged
+
+DECISION LOGIC (FINAL GATE):
+
+- If ALL required checks pass:
+  → Call the done tool EXACTLY ONCE
+  → Pass the FULL rankedProducts array
+  → Do NOT modify any data
+
+- If ANY required check fails:
+  → Call the reject tool EXACTLY ONCE
+  → Provide a short, clear reason for rejection
+  → Do NOT call the done tool
+
+STRICT RULES:
+
+- Do NOT analyze or calculate prices
+- Do NOT reorder, edit, or fix products
+- Do NOT return text outside tool calls
+- This agent is a FINAL GATE, not a fixer
+
 
     `
   },

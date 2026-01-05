@@ -29,8 +29,14 @@ export const FormatResultToProductDetailes= async(data:any)=>{
        })
       })
     }
-    console.log("products: ", products)
-    return products
+    // console.log("products: ", products)
+    if(products.length>20){
+       const first20=products.slice(0, 20)
+    return first20
+    }
+
+      return products
+   
 
      
 

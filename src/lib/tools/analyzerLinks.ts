@@ -3,32 +3,30 @@ import { z } from 'zod';
 import {  connectDB } from '../db/connection';
 import productSearch from '@/models/productSearch';
 import RankedProduct from '@/models/priceAnalysis';
+const RankedProductSchema = z.object({
+  title: z.string(),
+  link: z.string(),
+  source: z.string(),
+  position: z.number(),
+  price: z.string(),
+  imageUrl: z.string(),
+  rating: z.number(),
+  rankingReason: z.string(),
+});
+
 
 export const Analyzer = createTool({
   name: 'save_tool',
   description:
   "Save the finalized array of analyzed product objects to the database. This tool should be called only after all analysis is complete and the products are correctly ranked.",
 parameters: z.object({
-  products: z
-    .array(
-      z.object({
-        title: z.string(),
-        link: z.string().url(),
-        source: z.string().optional(),
-        position: z.number(),
-        price: z.string().optional(),
-        imageUrl: z.string().optional(),
-        rating: z.number().optional(),
-        rankingReason: z.string().describe("why you ranked this position"),
-      })
-    )
-    .describe(
-      "Final ranked array of product objects ready to be persisted. Each object must reflect the analysis result without modification."
-    ),
+  products: z.array(RankedProductSchema),
 }),
 
   handler: async (input, { network, agent, step }) => {
     let rankedProducts=input.products
+
+    console.log("Ranked products: ", rankedProducts)
 
     // saving to db
     await step?.run("saving_to_db", async()=>{
@@ -37,19 +35,21 @@ parameters: z.object({
       if(runId){
         await connectDB()
       await RankedProduct.create({
-        productId:runId,  
+        runId,  
         rankedProducts
       })
 
       // updating the progress
-         await productSearch.findByIdAndUpdate(
-                       runId,
+         await productSearch.findOneAndUpdate(
+                       {runId},
                        {
                          $set:{
                            progress:80
                          }
                        }
       )
+
+      
 
     
 

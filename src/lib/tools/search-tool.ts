@@ -17,7 +17,8 @@ export const searchTool = createTool({
 
        //  configuring thr axios api
     let data = JSON.stringify({
-      q: input.query,
+      "q": input.query,
+      "num":20
     });
 
     let config = {
@@ -88,7 +89,7 @@ export const searchTool = createTool({
 
     
     network.state.data.product=products
-    console.log("Products formated:", products)
+    // console.log("Products formated:", products)
 
   },
 });

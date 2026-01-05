@@ -8,7 +8,7 @@ export const supervisor=createRoutingAgent({
     name:"supervisor",
     description:"Ai supervisor that orchestrates the product prices always get lower by lower price",
   system: ({ network }) => {
-  const products = network?.state?.data?.products || [];
+  const products = network?.state?.data?.product || [];
   const rankedProducts = network?.state?.data?.rankedProducts || [];
   const approved = network?.state?.data?.approved;
 
@@ -54,10 +54,7 @@ ${JSON.stringify(approved, null, 2)}
 2. If products exist AND NO rankedProducts exist:
    → route to links-analyzer
 
-3. If rankedProducts exist AND approved is NOT true:
-   → route to moderator
-
-4. If approved === true:
+3. If approved === true or even false:
    → end workflow and call completed tool
 
 ────────────────────────────────
@@ -68,13 +65,14 @@ ${JSON.stringify(approved, null, 2)}
 - Do NOT fabricate or infer prices.
 - Do NOT call tools other than route_to_agent or completed.
 - This agent ONLY coordinates execution order.
+-complete the workflow if the moderator rejects or done
 
 ────────────────────────────────
 **Success Criteria:**
 - All products are processed.
 - Rankings prioritize lowest price.
 - Moderator approval is required.
-- Workflow ends ONLY after approval.
+- Workflow ends ONLY after approval gets value and every thing was done.
 `
     },
    model:openai({model:"gpt-5-mini"}),
