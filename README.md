@@ -1,5 +1,5 @@
 
-![My Image](public/image.png)
+![My Image](public/web.png)
 
 # 🕵️‍♂️ Price Scout Agent
 
